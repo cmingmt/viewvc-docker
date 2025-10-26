@@ -53,17 +53,8 @@ done
                         fi
                 fi
         fi
-# 1. 启动 fcgiwrap
-
 /usr/bin/spawn-fcgi -u www-data -g www-data -s /var/run/fcgiwrap.socket  -- /usr/sbin/fcgiwrap  &
-
 chown -R www-data:www-data $REPOSITORY_ROOTS || true
-
-# 3. 检查 ViewVC 配置文件是否已挂载或存在
-if [ ! -f /etc/viewvc/viewvc.conf ]; then
-    echo "ViewVC config file not found. Please mount your configuration or repository volume."
-fi
-
 # 执行 CMD ["nginx", "-g", "daemon off;"]
 exec "$@"
 
