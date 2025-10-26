@@ -42,9 +42,9 @@ RUN mkdir -p /var/www/html/cgi-bin \
     && mv /usr/local/viewvc/viewvc.conf /usr/local/viewvc/viewvc.conf.backup \
 	&& cp /usr/local/viewvc/bin/cgi/viewvc.cgi  /var/www/html/cgi-bin/ \
 	&& cp -r /usr/local/viewvc/templates/default/docroot /var/www/html/viewvc \
-    &&  sed -Ei "s#(Powered by .+?<\/a>)#\1 in a $(cat /etc/issue | cut -d ' ' -f 1-2) based Docker container#" /usr/local/viewvc/templates/default/*/footer.ezt 
+    &&  sed -Ei "s#(Powered by .+?<\/a>)#\1 in a $(cat /etc/issue | cut -d ' ' -f 1-2) based Docker container#"  ${VIEWVC_HOME}/templates/default/*/footer.ezt 
 
-
+ 
 COPY nginx-viewvc.conf /etc/nginx/nginx.conf
 COPY viewvc.conf /usr/local/viewvc/viewvc.conf
 COPY cvsgraph.conf /usr/local/viewvc/cvsgraph.conf
