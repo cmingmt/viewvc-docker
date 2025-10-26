@@ -1,3 +1,10 @@
-Viewvc version is 1.2.5.
-Start the docker container and attach the CVS root to /opt/cvs in Docker.
-Enjoy it.
+# Viewvc version is 1.2.5.
+```shell
+ docker build -t viewvc .
+```
+```shell
+ docker run -d --name viewvc -p 80:80 -v /path/host/cvsroot:/opt/cvs:ro viewvc
+```
+ visit http://your-domian/
+
+ Enjoy it.
