@@ -40,6 +40,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: 🏷️ Extract Docker Metadata (Labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # 告诉 metadata action 你的镜像基础名称，以便生成默认 OCI 标签
+          images: |
+            ghcr.io/${{ github.repository }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+          # ❗ 关键：添加 description 标签
+          labels: |
+            org.opencontainers.image.description=build with viewvc 1.2.5
+            org.opencontainers.image.vendor=${{ github.repository_owner }} # 示例：使用 GitHub Owner 作为供应商
       - name: 🚀 Build and Push Docker Image
         # 核心步骤：构建并推送到 GHCR
         uses: docker/build-push-action@v5
@@ -57,8 +69,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
-          labels: |
-            org.opencontainers.image.description='Viewvc 1.2.5'
+          labels: ${{ steps.meta.outputs.labels }}
           # 使用 GitHub Actions 缓存来加速后续构建
           cache-from: type=gha
           cache-to: type=gha,mode=max
