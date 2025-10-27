@@ -9,10 +9,10 @@ on:
   # 也可以手动触发，方便测试
   workflow_dispatch:
 
-# 定义环境变量 (可选，但推荐)
+# 定义环境变量
 env:
-  # 镜像名称，使用仓库名的小写形式
-  IMAGE_NAME: ${{ github.repository | toLower }}
+  # 修正后的镜像名称：使用内置的 lower() 函数
+  IMAGE_NAME: ${{ lower(github.repository) }} 
   # 构建上下文路径，通常是仓库根目录
   BUILD_CONTEXT: .
 
@@ -46,8 +46,6 @@ jobs:
         with:
           # 告诉 action 在哪里找到要构建的文件 (即仓库根目录)
           context: ${{ env.BUILD_CONTEXT }}
-          # Dockerfile 路径，默认为 BUILD_CONTEXT/Dockerfile
-          # file: ${{ env.BUILD_CONTEXT }}/Dockerfile 
           # 设为 true，构建成功后自动推送到已登录的 registry
           push: true
           # 定义镜像标签
