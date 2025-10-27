@@ -57,6 +57,8 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.description='Viewvc 1.2.5'
           # 使用 GitHub Actions 缓存来加速后续构建
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -66,3 +68,5 @@ jobs:
           echo "Successfully pushed images to GHCR:"
           echo "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest"
           echo "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}"
+          echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest"
+          echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}"
