@@ -1,57 +1,46 @@
 name: 🐳 Docker Build and Push to GHCR
 
-# 触发条件: 当代码推送到 'main' 或 'master' 分支时触发
 on:
   push:
     branches:
       - main
       - master
-  # 也可以手动触发，方便测试
   workflow_dispatch:
-
-# 定义环境变量
-env:
-  # 修正后的镜像名称：使用内置的 lower() 函数
-  IMAGE_NAME: ${{ lower(github.repository) }} 
-  # 构建上下文路径，通常是仓库根目录
-  BUILD_CONTEXT: .
 
 jobs:
   build-and-push:
-    # 在最新的 Ubuntu 运行器上执行
     runs-on: ubuntu-latest
     
-    # 步骤列表
     steps:
       - name: ⬇️ Checkout Repository
-        # 检出代码到运行器
         uses: actions/checkout@v4
         
       - name: 🛠️ Set up Docker Buildx
-        # 设置 Buildx，启用高级构建功能
         uses: docker/setup-buildx-action@v3
         
       - name: 🔑 Log in to GitHub Container Registry
-        # 登录到 ghcr.io (GitHub Container Registry)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          # 使用 GitHub 自动生成的 Token 进行认证
+          # 必须使用 GITHUB_TOKEN 作为密码
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🚀 Build and Push Docker Image
-        # 核心步骤：构建并推送到 GHCR
         uses: docker/build-push-action@v5
         with:
-          # 告诉 action 在哪里找到要构建的文件 (即仓库根目录)
-          context: ${{ env.BUILD_CONTEXT }}
+          # 默认使用仓库根目录作为上下文
+          context: .
           # 设为 true，构建成功后自动推送到已登录的 registry
           push: true
-          # 定义镜像标签
+          # -------------------------------------------------------------
+          # 标签定义：直接使用 owner 和 repository name 变量。
+          # 警告：请确保您的 GitHub 仓库名称已经是小写的，
+          # 否则在推送时可能会被 GHCR 拒绝。
+          # -------------------------------------------------------------
           tags: |
-            ghcr.io/${{ env.IMAGE_NAME }}:latest
-            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} # 使用 commit SHA 作为版本标签
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
           # 使用缓存，加速后续构建
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -59,5 +48,5 @@ jobs:
       - name: ✨ Show Image Tags
         run: |
           echo "Successfully pushed images to GHCR:"
-          echo "ghcr.io/${{ env.IMAGE_NAME }}:latest"
-          echo "ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          echo "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest"
+          echo "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}"
