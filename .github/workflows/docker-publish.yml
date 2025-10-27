@@ -35,7 +35,11 @@ jobs:
           username: ${{ github.actor }} # 登录用户
           # 必须使用 GitHub 自动生成的 Token 进行认证
           password: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: 🔑 Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: 🚀 Build and Push Docker Image
         # 核心步骤：构建并推送到 GHCR
         uses: docker/build-push-action@v5
@@ -51,6 +55,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
           # 使用 GitHub Actions 缓存来加速后续构建
           cache-from: type=gha
           cache-to: type=gha,mode=max
