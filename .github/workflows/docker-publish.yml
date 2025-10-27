@@ -14,6 +14,9 @@ jobs:
     # 在最新的 Ubuntu 运行器上执行
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: read # 允许读取代码
+      packages: write # 允许写入 GHCR Package
     # 步骤列表
     steps:
       - name: ⬇️ Checkout Repository
